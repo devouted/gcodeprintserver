@@ -1,0 +1,1 @@
+* * * * *  echo "this is ENV env, no crontab enabled" > /proc/1/fd/1 2>&1

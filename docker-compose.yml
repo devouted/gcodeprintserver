@@ -1,0 +1,46 @@
+volumes:
+    mysql:
+services:
+    apache:
+      build:
+        context: .
+        dockerfile: docker/Dockerfile
+        args:
+          USERID: ${USERID}
+          GROUPID: ${GROUPID}
+      volumes:
+        - ./application:/var/www/html
+        - ./docker/localhost.conf:/etc/apache2/sites-available/localhost.conf
+        - ./docker/apache2.conf:/etc/apache2/apache2.conf
+      environment:
+        MYSQL_DATABASE: "${MYSQL_DATABASE}"
+        MYSQL_USER: "${MYSQL_USER}"
+        MYSQL_PORT: "${MYSQL_PORT}"
+        MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
+        MYSQL_HOST: "${MYSQL_HOST}"
+        APP_ENV: "${APP_ENV}"
+      ports:
+        - 80:80
+    database:
+      image: mysql:8.0-debian
+      command: ["--log_bin_trust_function_creators=1", "--default-authentication-plugin=caching_sha2_password"]
+      environment:
+        MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
+        MYSQL_DATABASE: "${MYSQL_DATABASE}"
+        MYSQL_USER: "${MYSQL_USER}"
+        MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
+      expose:
+        - "3306"
+      volumes:
+        - mysql:/var/lib/mysql
+    phpmyadmin:
+      image: phpmyadmin/phpmyadmin
+      expose:
+        - "80"
+      environment:
+        UPLOAD_LIMIT: "${UPLOAD_LIMIT}"
+        PMA_HOST: "${MYSQL_HOST}"
+        PMA_USER: "root"
+        PMA_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
+      depends_on:
+        - database
