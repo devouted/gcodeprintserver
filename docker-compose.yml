@@ -21,6 +21,8 @@ services:
         APP_ENV: "${APP_ENV}"
       ports:
         - 80:80
+      devices:
+        - "/dev/ttyUSB0:/dev/ttyUSB0"
     database:
       image: mysql:8.0-debian
       command: ["--log_bin_trust_function_creators=1", "--default-authentication-plugin=caching_sha2_password"]
