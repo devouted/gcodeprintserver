@@ -38,18 +38,12 @@ RUN docker-php-ext-install -j$(nproc) gd \
 # Composer
 COPY --from=composer:2.3.5 /usr/bin/composer /usr/bin/composer
 ENV COMPOSER_ALLOW_SUPERUSER=1
-RUN composer global require "symfony/flex" --prefer-dist --no-progress --no-suggest --classmap-authoritative
 ENV PATH="${PATH}:/root/.composer/vendor/bin"
 
 # Install Symfony Flex globally to speed up download of Composer packages (parallelized prefetching)
 RUN set -eux; \
   composer global require "symfony/flex" --prefer-dist --no-progress --no-suggest --classmap-authoritative; \
   composer clear-cache
-
-# Phpunit.phar
-RUN curl -fsSL -o /tmp/phpunit.phar https://phar.phpunit.de/phpunit-7.5.2.phar && \
-    chmod +x /tmp/phpunit.phar && \
-    mv /tmp/phpunit.phar /usr/bin/phpunit.phar
 
 # configure apache
 RUN a2enmod access_compat alias auth_basic auth_digest authn_core authn_file authz_core authz_groupfile authz_host authz_user \
