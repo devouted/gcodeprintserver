@@ -29,6 +29,10 @@ class PrintIO
     #[ORM\Column(options: ['default' => 0])]
     private ?int $status = null;
 
+    #[ORM\ManyToOne(inversedBy: 'printios', cascade:['persist'])]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?printjob $printjob = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -90,6 +94,18 @@ class PrintIO
     public function setStatus(int $status): static
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    public function getPrintjob(): ?printjob
+    {
+        return $this->printjob;
+    }
+
+    public function setPrintjob(?printjob $printjob): static
+    {
+        $this->printjob = $printjob;
 
         return $this;
     }
