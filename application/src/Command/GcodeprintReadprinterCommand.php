@@ -7,6 +7,9 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\PrintIORepository;
+use App\Entity\PrintIO;
 
 #[AsCommand(
     name: 'gcodeprint:readprinter',
@@ -14,11 +17,17 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 class GcodeprintReadprinterCommand extends Command
 {
-    const PRINTER_OUTPUT = "/dev/pts/2";
+    public function __construct(private EntityManagerInterface $entityManager, private PrintIORepository $printIORepository) {
+        parent::__construct();
+    }
+    const PRINTER_OUTPUT = "/dev/ttyUSB0";
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
+        
+        system("stty -F /dev/ttyUSB0 115200 raw -echo");
+        
         $stream = fopen(self::PRINTER_OUTPUT, 'r');
 
         if ($stream) {
@@ -28,8 +37,14 @@ class GcodeprintReadprinterCommand extends Command
                     $io->success($line);
                     $io->info($message);
 
+                    $print = $this->printIORepository->getLastEntry();
+                    if($print){
+                        $print->setEnd(new \DateTime());
+                        $print->setOutput($message);
+                        $print->setStatus(1);
+                        $this->entityManager->flush();
+                    }
                     $message="";
-                    //mark first unmarked line as done
                 }
                 else{
                     $message .= $line;

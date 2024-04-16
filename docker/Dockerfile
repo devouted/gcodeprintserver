@@ -69,6 +69,7 @@ COPY ./docker/php.ini /usr/local/etc/php/php.ini
 #add user apache for internal container
 RUN groupadd --gid $GROUPID apache
 RUN useradd -l --system --shell /bin/bash --uid $USERID --gid $GROUPID apache
+RUN usermod -a -G dialout apache
 
 RUN echo "su apache -c \"/var/www/html/bin/console \$@\"" > /usr/local/bin/run
 RUN chmod +x /usr/local/bin/run

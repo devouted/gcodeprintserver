@@ -20,6 +20,10 @@ class PrintIORepository extends ServiceEntityRepository
     {
         parent::__construct($registry, PrintIO::class);
     }
+    
+    public function getLastEntry() {
+        return $this->findOneBy(['status'=>0], ['id'=>'ASC']);
+    }
 
     //    /**
     //     * @return PrintIO[] Returns an array of PrintIO objects
@@ -46,3 +50,4 @@ class PrintIORepository extends ServiceEntityRepository
     //        ;
     //    }
 }
+

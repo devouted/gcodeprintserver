@@ -14,10 +14,10 @@ class PrintIO
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 2048)]
     private ?string $input = null;
 
-    #[ORM\Column(length: 255, nullable: true, options: ['default' => null])]
+    #[ORM\Column(length: 65535, type: 'text',  nullable: true, options: ['default' => null])]
     private ?string $output = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, options: ['default' => 'CURRENT_TIMESTAMP'])]
